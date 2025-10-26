@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import Annotated
 from enum import Enum
 
+from htmlnode import HTMLNode, ParentNode, LeafNode
 class TextType(Enum):
-    PLAIN = "plain"
+    TEXT = "text"
     BOLD = "bold"
     ITALIC = "italic"
     CODE = "code"
@@ -32,3 +33,26 @@ class TextNode:
 
     def __repr__(self) -> str:
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+
+def text_node_to_html_node(text_node: TextNode) -> HTMLNode:
+    match(text_node.text_type):
+        case TextType.TEXT: 
+            return LeafNode(None, text_node.text)
+        case TextType.BOLD:
+            return LeafNode("b", text_node.text)
+        case TextType.ITALIC:
+            return LeafNode("i", text_node.text)
+        case TextType.CODE:
+            return LeafNode("code", text_node.text)
+        case TextType.LINK:
+            if text_node.url is None:
+                raise ValueError("Link URL Empty")
+            return LeafNode("a", text_node.text, props={"href": text_node.url})
+        case TextType.IMAGE:
+            if text_node.url is None:
+                raise ValueError("Image src Empty")
+            return LeafNode("img", "", props={"src": text_node.url, "alt": text_node.text})
+        case _:
+            raise ValueError(f"Invalid TextType: {text_node.text_type}")
+
+    raise ValueError(f"Invalid TextType: {text_node.text_type}")
