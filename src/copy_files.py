@@ -1,10 +1,10 @@
 import os
 import shutil
 
-from generate_page import generate_page
-
 def build(source:str, destination:str):
     # Clean destination folder
+    if not os.path.exists(destination):
+        os.mkdir(destination)
     for file in os.listdir(destination):
         filepath = os.path.join(destination, file)
         if os.path.isdir(filepath):
